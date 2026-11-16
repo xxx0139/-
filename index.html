@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>欢迎来到 数字空间</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #06070d;
+            --glass: rgba(255, 255, 255, 0.06);
+            --glass-border: rgba(255, 255, 255, 0.12);
+
+            /* 文字层级：正文 → 次级 → 弱化 */
+            --text: #ffffff;
+            --text-soft: #e2ebfc;
+            --text-dim: #c0d2ee;
+
+            /* 主题色 */
+            --c-cyan: #0ff0ff;
+            --c-purple: #a855f7;
+
+            /* 流动渐变：用于文字变色 */
+            --grad-main: linear-gradient(90deg, #0ff0ff, #4f8cff, #a855f7, #ff4ecd, #0ff0ff);
+            --grad-soft: linear-gradient(90deg, #f2f6ff, #a7dcff, #c8b6ff, #ffc9ec, #f2f6ff);
+        }
+
+        body {
+            font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+
+        ::selection {
+            background: rgba(15, 240, 255, 0.28);
+            color: #ffffff;
+        }
+
+        a:focus-visible,
+        button:focus-visible {
+            outline: 1px solid rgba(15, 240, 255, 0.55);
+            outline-offset: 3px;
+            border-radius: 6px;
+        }
+
+        /* ===== 星空背景 ===== */
+        #stars {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+        }
+
+        #bgVideo {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* ===== 导航（极简无底） ===== */
+        nav {
+            position: fixed;
+            top: 22px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(92%, 960px);
+            padding: 10px 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            backdrop-filter: none;
+            z-index: 100;
+        }
+
+        .logo {
+            text-decoration: none;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: var(--grad-main);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: charFlow 7s linear infinite;
+            filter: drop-shadow(0 0 10px rgba(15, 240, 255, 0.25));
+            transition: filter 0.3s ease;
+        }
+
+        .logo:hover {
+            filter: drop-shadow(0 0 18px rgba(168, 85, 247, 0.7));
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            position: relative;
+            background: var(--grad-soft);
+            background-size: 260% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+            font-size: 0.92rem;
+            padding-bottom: 4px;
+            transition: filter 0.3s ease;
+            animation: charFlow 9s linear infinite;
+        }
+
+        .nav-links a::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 2px;
+            border-radius: 2px;
+            background: var(--grad-main);
+            background-size: 300% 100%;
+            transform: scaleX(0);
+            transition: transform 0.35s ease;
+            animation: charFlow 6s linear infinite;
+        }
+
+        .nav-links a:hover {
+            background-image: var(--grad-main);
+            filter: brightness(1.15) drop-shadow(0 0 7px rgba(15, 240, 255, 0.55));
+        }
+
+        .nav-links a:hover::after {
+            transform: scaleX(1);
+        }
+
+        /* ===== 平板适配 ===== */
+        @media (max-width: 1024px) {
+            nav {
+                width: 94%;
+            }
+
+            .nav-links {
+                gap: 18px;
+            }
+
+            .hero {
+                padding-top: 15vh;
+            }
+        }
+
+        /* ===== 首屏 ===== */
+        .hero {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            text-align: center;
+            padding: 18vh 6% 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-tag {
+            font-size: 0.85rem;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+            background: var(--grad-main);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation:
+                fadeUp 0.8s ease both,
+                charFlow 6s linear infinite;
+        }
+
+        /* ===== 标题：逐字波浪 + 流光渐变 ===== */
+        .hero h1 {
+            font-family: "Songti SC", "SimSun", "Noto Serif SC", serif;
+            font-size: clamp(2.4rem, 6.5vw, 4.2rem);
+            font-weight: 700;
+            letter-spacing: 5px;
+            line-height: 1.25;
+        }
+
+        .wave-title .char {
+            display: inline-block;
+            opacity: 0;
+            transition: opacity 0.18s ease;
+        }
+
+        .wave-title .char.typed {
+            opacity: 1;
+        }
+
+        .wave-title .char-inner {
+            display: inline-block;
+            background: linear-gradient(
+                120deg,
+                #e8f6ff 0%,
+                #0ff0ff 30%,
+                #4f8cff 48%,
+                #a855f7 68%,
+                #ff4ecd 85%,
+                #e8f6ff 100%
+            );
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation:
+                charWave 2.8s ease-in-out infinite,
+                charFlow 9s linear infinite;
+            animation-delay:
+                calc(var(--i) * 0.18s),
+                calc(var(--i) * -0.6s);
+            filter: drop-shadow(0 0 14px rgba(15, 240, 255, 0.35));
+            transition: filter 0.3s ease;
+        }
+
+        .wave-title .char-inner:hover {
+            filter: drop-shadow(0 0 24px rgba(168, 85, 247, 0.8));
+        }
+
+        @keyframes charWave {
+            0%, 100% { transform: translateY(0); }
+            50%      { transform: translateY(-10px); }
+        }
+
+        @keyframes charFlow {
+            from { background-position: 0% 50%; }
+            to   { background-position: 300% 50%; }
+        }
+
+        .hero p {
+            margin-top: 28px;
+            max-width: 560px;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            background: var(--grad-soft);
+            background-size: 220% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation:
+                fadeUp 0.8s ease 0.3s both,
+                charFlow 11s linear infinite;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== 搜索框（霓虹描边，紧凑版） ===== */
+        .search-bar {
+            margin-top: 30px;
+            width: min(100%, 440px);
+            padding: 2px;
+            border-radius: 14px;
+            background: linear-gradient(90deg, #0ff0ff, #a855f7, #ff4ecd, #0ff0ff);
+            background-size: 300% 100%;
+            animation: fadeUp 0.8s ease 0.45s both, borderFlow 5s linear infinite;
+            transition: box-shadow 0.3s;
+        }
+
+        .search-bar:focus-within {
+            box-shadow: 0 0 28px rgba(15, 240, 255, 0.35);
+        }
+
+        @keyframes borderFlow {
+            from { background-position: 0% 50%; }
+            to   { background-position: 300% 50%; }
+        }
+
+        .sb-inner {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(8, 10, 20, 0.92);
+            backdrop-filter: blur(14px);
+            border-radius: 12px;
+            padding: 3px 8px;
+        }
+
+        .engine {
+            flex-shrink: 0;
+            max-width: 120px;
+            overflow: hidden;
+            white-space: nowrap;
+            border: none;
+            background: transparent;
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            padding: 5px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: max-width 0.35s ease, opacity 0.25s ease,
+                        padding 0.35s ease, color 0.3s, background 0.3s,
+                        text-shadow 0.3s;
+        }
+
+        .engine:hover {
+            color: #eafcff;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .engine.active {
+            background: rgba(15, 240, 255, 0.15);
+            color: var(--c-cyan);
+            font-weight: 700;
+            text-shadow: 0 0 12px rgba(15, 240, 255, 0.5);
+        }
+
+        /* 未聚焦、未悬停时引擎按钮自动折叠 */
+        .search-bar:not(:focus-within):not(:hover) .engine {
+            max-width: 0;
+            opacity: 0;
+            padding-left: 0;
+            padding-right: 0;
+            pointer-events: none;
+        }
+
+        .search-bar input {
+            flex: 1;
+            min-width: 0;
+            border: none;
+            background: transparent;
+            color: var(--text);
+            font-size: 0.9rem;
+            line-height: 1.3;
+            outline: none;
+            padding: 5px 4px;
+        }
+
+        .search-bar input::placeholder {
+            color: var(--text-dim);
+        }
+
+        .search-go {
+            flex-shrink: 0;
+            border: none;
+            border-radius: 8px;
+            padding: 5px 12px;
+            background: transparent;
+            color: #cfefff;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+        }
+
+        .search-go:hover {
+            background: rgba(15, 240, 255, 0.1);
+            color: #eafcff;
+            box-shadow: 0 0 14px rgba(15, 240, 255, 0.25);
+        }
+
+        /* ===== 页脚 ===== */
+        footer {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 20px 6% 72px;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        footer > p {
+            letter-spacing: 0.4px;
+            background: var(--grad-soft);
+            background-size: 220% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: charFlow 12s linear infinite;
+        }
+
+        /* ===== 导航下拉开关（邮箱 / 云盘通用） ===== */
+        .nav-drop {
+            position: relative;
+        }
+
+        .nav-drop-arrow {
+            display: inline-block;
+            font-size: 0.7em;
+            transition: transform 0.35s;
+        }
+
+        .nav-drop > a[aria-expanded="true"] .nav-drop-arrow {
+            transform: rotate(180deg);
+        }
+
+        /* 面板默认隐藏，展开后点外部或点链接自动隐藏 */
+        .drop-panel {
+            position: absolute;
+            top: calc(100% + 14px);
+            left: 50%;
+            transform: translateX(-50%) translateY(-6px);
+            width: 252px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            padding: 12px;
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            background: rgba(10, 13, 24, 0.92);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+        }
+
+        .drop-panel.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .drop-chip {
+            display: block;
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 8px 6px;
+            background: var(--glass);
+            color: var(--text-soft);
+            font-size: 0.82rem;
+            text-align: center;
+            text-decoration: none;
+            letter-spacing: 0.5px;
+            transition: color 0.3s, border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+        }
+
+        .drop-chip:hover {
+            color: var(--c-cyan);
+            border-color: rgba(15, 240, 255, 0.45);
+            box-shadow: 0 0 14px rgba(15, 240, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* 「音乐」标题同时是播放器的开关与状态指示 */
+        #musicLink.playing {
+            background-image: var(--grad-main);
+            filter: drop-shadow(0 0 7px rgba(168, 85, 247, 0.65));
+            animation: musicPulse 2s ease-in-out infinite;
+        }
+
+        #musicLink.playing::after {
+            transform: scaleX(1);
+        }
+
+        @keyframes musicPulse {
+            0%, 100% {
+                text-shadow: 0 0 8px rgba(15, 240, 255, 0.45);
+                box-shadow: 0 0 0 0 rgba(15, 240, 255, 0.28);
+            }
+            50% {
+                text-shadow: 0 0 16px rgba(168, 85, 247, 0.75);
+                box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.12);
+            }
+        }
+
+        /* ===== 底部一行式时间 / 农历栏 ===== */
+        body {
+            padding-bottom: 46px;
+        }
+
+        .side-clock {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 90;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            width: auto;
+            height: 46px;
+            padding: 0 20px;
+            border: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0;
+            background: rgba(8, 10, 18, 0.74);
+            backdrop-filter: blur(16px);
+            box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.35);
+            color: var(--text);
+            font-size: 0.76rem;
+            white-space: nowrap;
+            overflow: hidden;
+            transition: background 0.35s ease, border-color 0.35s ease,
+                        box-shadow 0.35s ease, color 0.35s ease;
+        }
+
+        .sc-main {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .side-clock .sc-time {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .side-clock .sc-hm {
+            font-size: 1.05rem;
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: 1px;
+            font-variant-numeric: tabular-nums;
+            background: var(--grad-main);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: charFlow 7s linear infinite;
+            filter: drop-shadow(0 0 9px rgba(15, 240, 255, 0.28));
+        }
+
+        .side-clock .sc-sec {
+            font-size: 0.9rem;
+            font-variant-numeric: tabular-nums;
+            background: var(--grad-soft);
+            background-size: 240% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: charFlow 9s linear infinite;
+        }
+
+        .side-clock .sc-date {
+            margin: 0;
+            text-align: center;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            background: var(--grad-soft);
+            background-size: 240% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: charFlow 11s linear infinite;
+        }
+
+        .sc-divider {
+            width: 1px;
+            height: 14px;
+            background: rgba(255, 255, 255, 0.16);
+        }
+
+        .sc-lunar-wrap {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .sc-lunar {
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            background: var(--grad-soft);
+            background-size: 240% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: charFlow 13s linear infinite;
+        }
+
+        @media (max-width: 720px) {
+            .sc-lunar-wrap {
+                display: none;
+            }
+        }
+
+        /* ===== 迷你音乐播放器（融入页脚「音乐」标题） ===== */
+        .player {
+            position: fixed;
+            right: 24px;
+            bottom: 88px;
+            z-index: 200;
+            width: 320px;
+            border-radius: 18px;
+            background: rgba(10, 13, 24, 0.9);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(18px);
+            box-shadow: 0 16px 44px rgba(0, 0, 0, 0.55);
+            overflow: hidden;
+            transform-origin: top right;
+            transition:
+                opacity 0.28s ease,
+                transform 0.35s cubic-bezier(0.22, 0.9, 0.3, 1),
+                visibility 0s linear 0s;
+        }
+
+        .player.collapsed {
+            opacity: 0;
+            transform: translateY(-10px) scale(0.94);
+            pointer-events: none;
+            visibility: hidden;
+            transition:
+                opacity 0.26s ease,
+                transform 0.3s ease,
+                visibility 0s linear 0.3s;
+        }
+
+        .player.dragging {
+            border-color: rgba(15, 240, 255, 0.65);
+            box-shadow: 0 0 28px rgba(15, 240, 255, 0.4);
+        }
+
+        .player-body {
+            padding: 14px 16px 16px;
+        }
+
+        .player-head {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .player-brand {
+            flex: 1;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            background: var(--grad-main);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: charFlow 6s linear infinite;
+        }
+
+        .p-btn {
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-soft);
+            border-radius: 9px;
+            padding: 5px 10px;
+            font-size: 0.78rem;
+            font-family: inherit;
+            line-height: 1.2;
+            cursor: pointer;
+            transition: color 0.25s, background 0.25s, border-color 0.25s, box-shadow 0.25s;
+        }
+
+        .p-btn:hover {
+            color: #eafcff;
+            background: rgba(15, 240, 255, 0.1);
+            border-color: rgba(15, 240, 255, 0.45);
+            box-shadow: 0 0 14px rgba(15, 240, 255, 0.2);
+        }
+
+        .player-track {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+        }
+
+        .player-track .name {
+            flex: 1;
+            min-width: 0;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .player-track .name.empty {
+            color: var(--text-dim);
+        }
+
+        .player-track .time {
+            flex-shrink: 0;
+            color: var(--text-dim);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .p-range {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 4px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.12);
+            outline: none;
+            cursor: pointer;
+        }
+
+        .p-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--c-cyan), var(--c-purple));
+            box-shadow: 0 0 10px rgba(15, 240, 255, 0.55);
+        }
+
+        .p-range::-moz-range-thumb {
+            width: 12px;
+            height: 12px;
+            border: none;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--c-cyan), var(--c-purple));
+            box-shadow: 0 0 10px rgba(15, 240, 255, 0.55);
+        }
+
+        #seek { margin-bottom: 12px; }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .p-play {
+            width: 36px;
+            height: 36px;
+            flex-shrink: 0;
+            border: none;
+            border-radius: 50%;
+            background: var(--grad-main);
+            background-size: 250% 100%;
+            color: #06070d;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            animation: charFlow 5s linear infinite;
+            transition: transform 0.25s, box-shadow 0.25s;
+        }
+
+        .p-play:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 20px rgba(15, 240, 255, 0.45);
+        }
+
+        .volume-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+            min-width: 0;
+            color: var(--text-dim);
+            font-size: 0.75rem;
+        }
+
+        .player-list {
+            list-style: none;
+            max-height: 0;
+            opacity: 0;
+            overflow-y: auto;
+            margin-top: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0);
+            transition: max-height 0.35s ease, opacity 0.3s ease, margin-top 0.35s ease, border-color 0.35s ease;
+        }
+
+        .player.list-open .player-list {
+            max-height: 170px;
+            opacity: 1;
+            margin-top: 12px;
+            border-top-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .player-list li {
+            padding: 7px 10px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            color: var(--text-soft);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .player-list li:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: #eafcff;
+        }
+
+        .player-list li.active {
+            background: rgba(15, 240, 255, 0.14);
+            color: var(--c-cyan);
+            text-shadow: 0 0 10px rgba(15, 240, 255, 0.4);
+        }
+
+        /* ===== 手机适配 ===== */
+        @media (max-width: 768px) {
+            /* 导航改上下两行：上行 logo，下行菜单居中 */
+            nav {
+                top: 12px;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .nav-links {
+                gap: 14px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .nav-links a {
+                font-size: 0.82rem;
+            }
+
+            /* 首屏内容整体上移，标题缩小避免溢出 */
+            .hero {
+                padding-top: 13vh;
+            }
+
+            .hero h1 {
+                font-size: clamp(1.8rem, 8.5vw, 2.6rem);
+                letter-spacing: 2px;
+            }
+
+            .hero-tag {
+                letter-spacing: 4px;
+            }
+
+            .hero p {
+                font-size: 0.92rem;
+                line-height: 1.7;
+            }
+
+            /* 下拉面板相对视口居中，避免贴屏幕边缘溢出 */
+            .drop-panel {
+                position: fixed;
+                top: 92px;
+                width: min(252px, calc(100vw - 24px));
+            }
+
+            .player {
+                width: min(320px, calc(100vw - 24px));
+            }
+
+            /* 页脚版权行上移并缩小 */
+            footer {
+                padding: 12px 6% 60px;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* ===== 大屏适配：2K（≤2560px） ===== */
+        @media (min-width: 1920px) {
+            html {
+                font-size: 18px;
+            }
+
+            nav {
+                width: min(90%, 1200px);
+            }
+
+            .hero p {
+                max-width: 640px;
+            }
+
+            .search-bar {
+                width: min(100%, 520px);
+            }
+        }
+
+        /* ===== 大屏适配：4K（≥2560px） ===== */
+        @media (min-width: 2560px) {
+            html {
+                font-size: 21px;
+            }
+
+            nav {
+                width: min(85%, 1500px);
+            }
+
+            .hero p {
+                max-width: 760px;
+            }
+
+            .search-bar {
+                width: min(100%, 600px);
+            }
+
+            .drop-panel {
+                width: 300px;
+            }
+
+            .player {
+                width: 380px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="stars"></canvas>
+    <video id="bgVideo" playsinline loop style="display:none"></video>
+
+    <nav>
+        <a class="logo" href="https://kj.xlook.us.ci/" target="_blank" rel="noopener" title="数字空间">数字空间</a>
+        <ul class="nav-links">
+            <li><a href="https://xl.xlxl.ccwu.cc/" target="_blank" rel="noopener">导航</a></li>
+            <li class="nav-drop">
+                <a href="#" id="mailToggle" aria-expanded="false" aria-controls="mailPanel" title="展开常用邮箱">邮箱 <span class="nav-drop-arrow">▾</span></a>
+                <div class="drop-panel" id="mailPanel">
+                    <a class="drop-chip" href="https://mail.qq.com/" target="_blank" rel="noopener" title="QQ邮箱">QQ 邮箱</a>
+                    <a class="drop-chip" href="https://mail.163.com/" target="_blank" rel="noopener" title="网易163邮箱">163 邮箱</a>
+                    <a class="drop-chip" href="https://mail.126.com/" target="_blank" rel="noopener" title="网易126邮箱">126 邮箱</a>
+                    <a class="drop-chip" href="https://mail.google.com/" target="_blank" rel="noopener" title="Gmail">Gmail</a>
+                    <a class="drop-chip" href="https://outlook.live.com/" target="_blank" rel="noopener" title="Outlook">Outlook</a>
+                    <a class="drop-chip" href="https://mail.sina.com.cn/" target="_blank" rel="noopener" title="新浪邮箱">新浪邮箱</a>
+                    <a class="drop-chip" href="https://mail.sohu.com/" target="_blank" rel="noopener" title="搜狐邮箱">搜狐邮箱</a>
+                    <a class="drop-chip" href="https://mail.10086.cn/" target="_blank" rel="noopener" title="移动139邮箱">139 邮箱</a>
+                    <a class="drop-chip" href="https://www.foxmail.com/" target="_blank" rel="noopener" title="Foxmail">Foxmail</a>
+                    <a class="drop-chip" href="https://temp-mail.io/zh" target="_blank" rel="noopener" title="临时邮箱">临时邮箱</a>
+                </div>
+            </li>
+            <li><a href="#" id="copyEmail" title="点击复制邮箱地址">联系</a></li>
+            <li class="nav-drop">
+                <a href="#" id="cloudToggle" aria-expanded="false" aria-controls="cloudPanel" title="展开常用云盘">云盘 <span class="nav-drop-arrow">▾</span></a>
+                <div class="drop-panel" id="cloudPanel">
+                    <a class="drop-chip" href="https://user.123pan.cn/centerlogin?redirect_url=https%3A%2F%2Fyun.123pan.cn&source_page=website" target="_blank" rel="noopener" title="123云盘">123 云盘</a>
+                    <a class="drop-chip" href="https://pan.baidu.com/" target="_blank" rel="noopener" title="百度网盘">百度网盘</a>
+                    <a class="drop-chip" href="https://www.alipan.com/" target="_blank" rel="noopener" title="阿里云盘">阿里云盘</a>
+                    <a class="drop-chip" href="https://pan.quark.cn/" target="_blank" rel="noopener" title="夸克网盘">夸克网盘</a>
+                    <a class="drop-chip" href="https://cloud.189.cn/" target="_blank" rel="noopener" title="天翼云盘">天翼云盘</a>
+                    <a class="drop-chip" href="https://yun.139.com/" target="_blank" rel="noopener" title="移动云盘">移动云盘</a>
+                    <a class="drop-chip" href="https://pan.xunlei.com/" target="_blank" rel="noopener" title="迅雷云盘">迅雷云盘</a>
+                    <a class="drop-chip" href="https://www.lanzou.com/" target="_blank" rel="noopener" title="蓝奏云">蓝奏云</a>
+                    <a class="drop-chip" href="https://115.com/" target="_blank" rel="noopener" title="115网盘">115 网盘</a>
+                    <a class="drop-chip" href="https://onedrive.live.com/" target="_blank" rel="noopener" title="OneDrive">OneDrive</a>
+                </div>
+            </li>
+            <li><a href="https://xxx.xlxl.ccwu.cc/" target="_blank" rel="noopener" title="打开影视">影视</a></li>
+            <li><a href="https://www.tyhj.cc.cd" target="_blank" rel="noopener" title="打开社区">社区</a></li>
+            <li><a href="#" id="musicLink" title="打开迷你音乐播放器">音乐</a></li>
+        </ul>
+    </nav>
+
+    <header class="hero" id="home">
+        <div class="hero-tag loop-type">Hello, I'm 数字空间</div>
+        <h1 class="wave-title" aria-label="欢迎来到 数字空间">欢迎来到 数字空间</h1>
+        <p class="loop-type">这里是我的个人数字空间，记录技术、分享生活，热爱科技，喜欢探索，科技不只是冰冷的机器，它用创新改变生活。</p>
+        <form class="search-bar" id="searchForm">
+            <div class="sb-inner">
+                <button type="button" class="engine active" data-engine="bing">必应</button>
+                <button type="button" class="engine" data-engine="google">谷歌</button>
+                <input type="text" id="searchInput" placeholder="输入关键词，回车搜索…" autocomplete="off">
+                <button type="submit" class="search-go">搜索</button>
+            </div>
+        </form>
+    </header>
+
+    <!-- 底部一行式时间 / 农历栏 -->
+    <aside class="side-clock" id="sideClock" aria-label="日期时间农历">
+        <div class="sc-main">
+            <span class="sc-time"><span class="sc-hm" id="scHM">00:00</span><span class="sc-sec" id="scSec">00</span></span>
+            <span class="sc-divider"></span>
+            <span class="sc-date" id="scDate">—</span>
+            <span class="sc-lunar-wrap">
+                <span class="sc-divider"></span>
+                <span class="sc-lunar" id="scLunar">—</span>
+            </span>
+        </div>
+    </aside>
+
+    <footer id="contact">
+        <p class="loop-type">© 2026 数字空间 · 用 ❤ 与代码构建</p>
+    </footer>
+
+    <!-- 迷你音乐播放器（由导航「音乐」唤出） -->
+    <div class="player collapsed" id="player">
+        <div class="player-body">
+            <div class="player-head">
+                <span class="player-brand">MUSIC</span>
+                <button class="p-btn" id="pickFolder" type="button">添加文件夹</button>
+                <button class="p-btn" id="pickVideo" type="button" title="选择视频作为背景播放">视频背景</button>
+                <button class="p-btn" id="playerMin" type="button" aria-label="折叠播放器">–</button>
+            </div>
+            <div class="player-track">
+                <span class="name empty" id="trackName">未选择音乐</span>
+                <span class="time" id="trackTime">0:00 / 0:00</span>
+            </div>
+            <input type="range" class="p-range" id="seek" min="0" max="100" step="0.1" value="0" aria-label="播放进度">
+            <div class="player-controls">
+                <button class="p-btn" id="prevBtn" type="button" aria-label="上一首">⏮</button>
+                <button class="p-play" id="playBtn" type="button" aria-label="播放">▶</button>
+                <button class="p-btn" id="nextBtn" type="button" aria-label="下一首">⏭</button>
+                <button class="p-btn" id="listBtn" type="button" aria-label="播放列表">☰</button>
+                <label class="volume-wrap" title="音量">
+                    音量
+                    <input type="range" class="p-range" id="volume" min="0" max="1" step="0.01" value="0.8" aria-label="音量">
+                </label>
+            </div>
+            <ul class="player-list" id="playlist"></ul>
+        </div>
+        <input type="file" id="folderInput" webkitdirectory directory multiple hidden>
+        <input type="file" id="videoInput" accept=".mp4,.webm,.ogg,.mov,.m4v,.mkv,video/mp4,video/webm,video/ogg,video/quicktime,video/x-matroska" multiple hidden>
+    </div>
+
+    <script>
+        /* ===== 标题：逐字拆分 + 打字机出场（波浪+流光由 CSS 驱动） ===== */
+        const heroTitle = document.querySelector('.wave-title');
+        const titleChars = [...heroTitle.textContent.trim()];
+        heroTitle.innerHTML = titleChars.map((ch, i) =>
+            `<span class="char" style="--i:${i}"><span class="char-inner">${ch}</span></span>`
+        ).join('');
+
+        const typedChars = [...heroTitle.querySelectorAll('.char')];
+
+        let typedIndex = 0;
+        function typeNextChar() {
+            if (typedIndex >= typedChars.length) return;
+            const ch = typedChars[typedIndex++];
+            ch.classList.add('typed');
+            setTimeout(typeNextChar, 150 + Math.random() * 90);
+        }
+        setTimeout(typeNextChar, 550);
+
+        /* ===== 星空动画 ===== */
+        const canvas = document.getElementById('stars');
+        const ctx = canvas.getContext('2d');
+        let stars = [], meteors = [], W, H;
+
+        function resize() {
+            W = canvas.width = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+            initStars();
+        }
+
+        function initStars() {
+            const count = Math.floor((W * H) / 4500);
+            stars = Array.from({ length: count }, () => ({
+                x: Math.random() * W,
+                y: Math.random() * H,
+                r: Math.random() * 1.4 + 0.3,
+                alpha: Math.random(),
+                speed: Math.random() * 0.015 + 0.004,
+                hue: [210, 260, 190, 0][Math.floor(Math.random() * 4)]
+            }));
+        }
+
+        function spawnMeteor() {
+            if (meteors.length >= 2 || Math.random() > 0.008) return;
+            const angle = Math.PI / 4 + (Math.random() - 0.5) * 0.4;
+            meteors.push({
+                x: Math.random() * W * 0.8,
+                y: Math.random() * H * 0.3,
+                vx: Math.cos(angle) * 9,
+                vy: Math.sin(angle) * 9,
+                life: 1
+            });
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, W, H);
+
+            // 星星闪烁
+            for (const s of stars) {
+                s.alpha += s.speed;
+                const a = 0.35 + Math.abs(Math.sin(s.alpha)) * 0.65;
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                ctx.fillStyle = `hsla(${s.hue}, 90%, 85%, ${a})`;
+                ctx.fill();
+            }
+
+            // 流星
+            for (let i = meteors.length - 1; i >= 0; i--) {
+                const m = meteors[i];
+                m.x += m.vx;
+                m.y += m.vy;
+                m.life -= 0.012;
+                if (m.life <= 0) { meteors.splice(i, 1); continue; }
+                const grad = ctx.createLinearGradient(m.x, m.y, m.x - m.vx * 10, m.y - m.vy * 10);
+                grad.addColorStop(0, `rgba(255, 255, 255, ${m.life})`);
+                grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                ctx.strokeStyle = grad;
+                ctx.lineWidth = 1.6;
+                ctx.beginPath();
+                ctx.moveTo(m.x, m.y);
+                ctx.lineTo(m.x - m.vx * 10, m.y - m.vy * 10);
+                ctx.stroke();
+            }
+
+            spawnMeteor();
+            requestAnimationFrame(draw);
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+        draw();
+
+        /* ===== 搜索聚合：必应 / 谷歌 ===== */
+        const engineUrls = {
+            bing: 'https://www.bing.com/search?q=',
+            google: 'https://www.google.com/search?q='
+        };
+        let currentEngine = 'bing';
+        const searchInput = document.getElementById('searchInput');
+
+        document.querySelectorAll('.engine').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelector('.engine.active').classList.remove('active');
+                btn.classList.add('active');
+                currentEngine = btn.dataset.engine;
+                searchInput.focus();
+            });
+        });
+
+        document.getElementById('searchForm').addEventListener('submit', e => {
+            e.preventDefault();
+            const q = searchInput.value.trim();
+            if (!q) return;
+            window.open(engineUrls[currentEngine] + encodeURIComponent(q), '_blank');
+            searchInput.value = ''; // 搜索后清空输入框内容
+        });
+
+        /* ===== 点击邮箱复制地址 ===== */
+        const emailLink = document.getElementById('copyEmail');
+        emailLink.addEventListener('click', e => {
+            e.preventDefault();
+            const email = 'x@xlook.ccwu.cc';
+            const done = () => {
+                emailLink.textContent = '已复制 ✓';
+                setTimeout(() => { emailLink.textContent = '联系'; }, 1500);
+            };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(email).then(done).catch(() => fallbackCopy(email, done));
+            } else {
+                fallbackCopy(email, done);
+            }
+        });
+
+        function fallbackCopy(text, done) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy'); } catch (err) {}
+            document.body.removeChild(ta);
+            done();
+        }
+
+        /* ===== 导航下拉开关（邮箱 / 云盘通用）：点击展开/收起，点外部、点链接或无操作 5 秒自动隐藏 ===== */
+        function setupDropdown(toggleId, panelId) {
+            const toggle = document.getElementById(toggleId);
+            const panel = document.getElementById(panelId);
+            let hideTimer = null;
+
+            function setPanel(open) {
+                panel.classList.toggle('open', open);
+                toggle.setAttribute('aria-expanded', open);
+                clearTimeout(hideTimer);
+                if (open) {
+                    // 展开后无操作 5 秒自动隐藏
+                    hideTimer = setTimeout(() => setPanel(false), 5000);
+                }
+            }
+
+            toggle.addEventListener('click', e => {
+                e.preventDefault();
+                // 展开当前面板前，先收起其他下拉
+                if (!panel.classList.contains('open')) closeAllDropdowns();
+                setPanel(!panel.classList.contains('open'));
+            });
+
+            // 面板内有操作时重置 5 秒倒计时
+            panel.addEventListener('mousemove', () => {
+                if (panel.classList.contains('open')) {
+                    clearTimeout(hideTimer);
+                    hideTimer = setTimeout(() => setPanel(false), 5000);
+                }
+            });
+
+            // 点某个链接后自动隐藏
+            panel.addEventListener('click', e => {
+                if (e.target.closest('.drop-chip')) setPanel(false);
+            });
+
+            return setPanel;
+        }
+
+        const dropdownClosers = [
+            setupDropdown('mailToggle', 'mailPanel'),
+            setupDropdown('cloudToggle', 'cloudPanel')
+        ];
+
+        function closeAllDropdowns() {
+            dropdownClosers.forEach(close => close(false));
+        }
+
+        // 点面板外自动隐藏
+        document.addEventListener('click', e => {
+            if (!e.target.closest('.nav-drop')) closeAllDropdowns();
+        });
+
+        /* ===== 内容文字：循环打字（打出→停留→删除→重打） ===== */
+        const loopEls = document.querySelectorAll('.loop-type');
+
+        loopEls.forEach((el, idx) => {
+            const text = el.textContent.trim();
+            el.dataset.text = text;
+            el.style.minHeight = el.offsetHeight + 'px'; // 固定高度，避免布局跳动
+            el.textContent = '';
+            setTimeout(() => startLoopType(el), 900 + idx * 400); // 依次错峰启动
+        });
+
+        function startLoopType(el) {
+            const text = el.dataset.text;
+            let i = 0, deleting = false;
+            (function tick() {
+                if (!deleting) {
+                    i++;
+                    el.textContent = text.slice(0, i);
+                    if (i >= text.length) {
+                        deleting = true;
+                        setTimeout(tick, 2800);   // 打满停留
+                        return;
+                    }
+                    setTimeout(tick, 55);
+                } else {
+                    i--;
+                    el.textContent = text.slice(0, i);
+                    if (i <= 0) {
+                        deleting = false;
+                        setTimeout(tick, 700);    // 清空稍停后重打
+                        return;
+                    }
+                    setTimeout(tick, 25);
+                }
+            })();
+        }
+
+        /* ===== 平滑滚动 ===== */
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', e => {
+                const href = a.getAttribute('href');
+                if (!href || href.length < 2) return;
+                const target = document.querySelector(href);
+                if (target) {
+                    e.preventDefault();
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        /* ===== 迷你音乐播放器：本地文件夹 + 自动折叠 ===== */
+        const playerEl = document.getElementById('player');
+        const musicLink = document.getElementById('musicLink');
+        const playerMin = document.getElementById('playerMin');
+        const pickFolder = document.getElementById('pickFolder');
+        const folderInput = document.getElementById('folderInput');
+        const playBtn = document.getElementById('playBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const listBtn = document.getElementById('listBtn');
+        const seek = document.getElementById('seek');
+        const volume = document.getElementById('volume');
+        const trackName = document.getElementById('trackName');
+        const trackTime = document.getElementById('trackTime');
+        const listEl = document.getElementById('playlist');
+
+        const audio = new Audio();
+        audio.preload = 'metadata';
+        audio.volume = 0.8;
+
+        const bgVideo = document.getElementById('bgVideo');
+        const pickVideo = document.getElementById('pickVideo');
+        const videoInput = document.getElementById('videoInput');
+
+        let isVideoMode = false;
+        let videoTracks = [];
+        let videoUrls = [];
+
+        const getMedia = () => isVideoMode ? bgVideo : audio;
+        const getTracks = () => isVideoMode ? videoTracks : tracks;
+
+        let tracks = [];
+        let trackUrls = [];
+        let currentIndex = -1;
+
+        const HIDE_DELAY = 6000;   // 无操作 6 秒后自动折叠隐藏
+        let hideTimer = null;
+
+        const fmtTime = s => {
+            if (!isFinite(s) || s < 0) return '0:00';
+            const m = Math.floor(s / 60);
+            const sec = Math.floor(s % 60);
+            return `${m}:${String(sec).padStart(2, '0')}`;
+        };
+
+        const fillRange = (el, percent) => {
+            el.style.background =
+                `linear-gradient(90deg, #0ff0ff 0%, #a855f7 ${percent}%, rgba(255, 255, 255, 0.12) ${percent}%)`;
+        };
+
+        const showTrackName = (text, empty) => {
+            trackName.textContent = text;
+            trackName.classList.toggle('empty', !!empty);
+        };
+
+        function updateSeek() {
+            const media = getMedia();
+            const d = media.duration;
+            const p = isFinite(d) && d > 0 ? Math.min(100, (media.currentTime / d) * 100) : 0;
+            seek.value = p;
+            fillRange(seek, p);
+            trackTime.textContent = `${fmtTime(media.currentTime)} / ${fmtTime(d)}`;
+        }
+
+        function playTrack(i) {
+            const list = getTracks();
+            if (!list.length) return;
+            currentIndex = (i + list.length) % list.length;
+            const media = getMedia();
+            media.src = list[currentIndex].url;
+            if (isVideoMode) bgVideo.style.display = 'block';
+            showTrackName(list[currentIndex].name, false);
+            seek.value = 0;
+            fillRange(seek, 0);
+            trackTime.textContent = '0:00 / 0:00';
+            updateActive();
+            media.play().catch(() => {});
+        }
+
+        function updateActive() {
+            [...listEl.children].forEach((li, i) => li.classList.toggle('active', i === currentIndex));
+            const active = listEl.children[currentIndex];
+            if (active) active.scrollIntoView({ block: 'nearest' });
+        }
+
+        function renderList() {
+            listEl.innerHTML = '';
+            getTracks().forEach((t, i) => {
+                const li = document.createElement('li');
+                li.textContent = t.name;
+                li.title = t.name;
+                li.addEventListener('click', () => playTrack(i));
+                listEl.appendChild(li);
+            });
+        }
+
+        function loadTracks(files) {
+            audio.pause();
+            if (isVideoMode) {
+                bgVideo.pause();
+                bgVideo.style.display = 'none';
+                isVideoMode = false;
+                pickVideo.textContent = '视频背景';
+            }
+            trackUrls.forEach(u => URL.revokeObjectURL(u));
+            trackUrls = [];
+            tracks = files.map(f => {
+                const url = URL.createObjectURL(f);
+                trackUrls.push(url);
+                return { name: f.name.replace(/\.[^.]+$/, ''), url };
+            });
+            renderList();
+            playTrack(0);
+            expandPlayer();
+        }
+
+        /* ---- 自动折叠 / 展开（播放器挂靠在导航「音乐」下方） ---- */
+        function positionPlayer() {
+            const linkRect = musicLink.getBoundingClientRect();
+            const margin = 12;
+            const gap = 10;
+            const width = playerEl.offsetWidth || 320;
+            const height = playerEl.offsetHeight;
+
+            let right = window.innerWidth - linkRect.right;
+            right = Math.max(margin, Math.min(right, window.innerWidth - width - margin));
+
+            let top = musicLink.closest('nav').getBoundingClientRect().bottom + gap;
+            top = Math.max(margin, Math.min(top, window.innerHeight - height - margin));
+
+            playerEl.style.right = `${right}px`;
+            playerEl.style.top = `${top}px`;
+            playerEl.style.bottom = 'auto';
+        }
+
+        function expandPlayer() {
+            positionPlayer();
+            playerEl.classList.remove('collapsed');
+            musicLink.setAttribute('aria-expanded', 'true');
+            scheduleHide();
+        }
+
+        function collapsePlayer() {
+            playerEl.classList.add('collapsed');
+            playerEl.classList.remove('list-open');
+            musicLink.setAttribute('aria-expanded', 'false');
+            clearTimeout(hideTimer);
+        }
+
+        function scheduleHide() {
+            clearTimeout(hideTimer);
+            if (playerEl.classList.contains('list-open')) return; // 播放列表展开时不收起
+            hideTimer = setTimeout(collapsePlayer, HIDE_DELAY);
+        }
+
+        playerEl.addEventListener('pointerenter', () => clearTimeout(hideTimer));
+        playerEl.addEventListener('pointerleave', scheduleHide);
+        playerEl.addEventListener('pointerdown', scheduleHide);
+        playerMin.addEventListener('click', e => { e.stopPropagation(); collapsePlayer(); });
+
+        musicLink.setAttribute('aria-expanded', 'false');
+        musicLink.setAttribute('role', 'button');
+
+        window.addEventListener('resize', positionPlayer);
+
+        /* ---- 选择本地文件夹（系统目录选择 + 拖入文件夹） ---- */
+        const AUDIO_EXT = /\.(mp3|wav|m4a|aac|ogg|oga|flac|opus|wma)$/i;
+
+        const isAudio = f => f.type.startsWith('audio/') || AUDIO_EXT.test(f.name);
+        const byName = (a, b) => a.name.localeCompare(b.name, 'zh-Hans-CN');
+
+        async function collectFromDirectory(dir) {
+            const files = [];
+            for await (const entry of dir.values()) {
+                if (entry.kind === 'file') {
+                    const file = await entry.getFile();
+                    if (isAudio(file)) files.push(file);
+                } else if (entry.kind === 'directory') {
+                    files.push(...await collectFromDirectory(entry));
+                }
+            }
+            return files;
+        }
+
+        function readDirEntries(reader) {
+            return new Promise(resolve => reader.readEntries(resolve));
+        }
+
+        async function collectFromEntry(entry) {
+            if (entry.isFile) {
+                const file = await new Promise((resolve, reject) => entry.file(resolve, reject));
+                return isAudio(file) ? [file] : [];
+            }
+            if (entry.isDirectory) {
+                const reader = entry.createReader();
+                const files = [];
+                let batch;
+                do {
+                    batch = await readDirEntries(reader);
+                    for (const child of batch) files.push(...await collectFromEntry(child));
+                } while (batch.length);
+                return files;
+            }
+            return [];
+        }
+
+        function importFiles(files, tip) {
+            const audio = files.filter(isAudio).sort(byName);
+            if (!audio.length) {
+                showTrackName(tip || '该文件夹中没有音频文件', true);
+                return;
+            }
+            loadTracks(audio);
+        }
+
+        async function importFolder() {
+            if (window.showDirectoryPicker) {
+                try {
+                    const dir = await window.showDirectoryPicker({ mode: 'read' });
+                    importFiles(await collectFromDirectory(dir));
+                    return;
+                } catch (err) {
+                    if (err && err.name === 'AbortError') return;
+                }
+            }
+            folderInput.click();   // 不支持目录 API 时回退到目录上传
+        }
+
+        pickFolder.addEventListener('click', importFolder);
+
+        folderInput.addEventListener('change', e => {
+            importFiles(Array.from(e.target.files || []));
+            folderInput.value = '';
+        });
+
+        /* ---- 拖入文件夹或音频文件 ---- */
+        playerEl.addEventListener('dragover', e => {
+            e.preventDefault();
+            playerEl.classList.add('dragging');
+        });
+
+        playerEl.addEventListener('dragleave', e => {
+            if (!playerEl.contains(e.relatedTarget)) playerEl.classList.remove('dragging');
+        });
+
+        playerEl.addEventListener('drop', async e => {
+            e.preventDefault();
+            playerEl.classList.remove('dragging');
+
+            const entries = [...(e.dataTransfer.items || [])]
+                .map(item => item.webkitGetAsEntry && item.webkitGetAsEntry())
+                .filter(Boolean);
+
+            if (!entries.length) {
+                importFiles(Array.from(e.dataTransfer.files || []), '拖入的文件中没有音频');
+                return;
+            }
+
+            const files = [];
+            for (const entry of entries) files.push(...await collectFromEntry(entry));
+            importFiles(files, '拖入的文件夹中没有音频');
+        });
+
+        /* ---- 播放控制 ---- */
+        playBtn.addEventListener('click', () => {
+            const media = getMedia();
+            const list = getTracks();
+            if (!list.length) { isVideoMode ? videoInput.click() : folderInput.click(); return; }
+            if (media.paused) media.play().catch(() => {});
+            else media.pause();
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (getTracks().length) playTrack(currentIndex - 1);
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (getTracks().length) playTrack(currentIndex + 1);
+        });
+
+        listBtn.addEventListener('click', () => {
+            playerEl.classList.toggle('list-open');
+            if (playerEl.classList.contains('list-open')) clearTimeout(hideTimer);
+            else scheduleHide();
+        });
+
+        seek.addEventListener('input', () => {
+            const media = getMedia();
+            const d = media.duration;
+            if (!isFinite(d) || d <= 0) return;
+            media.currentTime = (seek.value / 100) * d;
+            updateSeek();
+        });
+
+        volume.addEventListener('input', () => {
+            const v = Number(volume.value);
+            audio.volume = v;
+            bgVideo.volume = v;
+            fillRange(volume, v * 100);
+        });
+
+        audio.addEventListener('timeupdate', updateSeek);
+        audio.addEventListener('loadedmetadata', updateSeek);
+        audio.addEventListener('ended', () => {
+            if (tracks.length > 1) playTrack(currentIndex + 1);
+            else { audio.currentTime = 0; updateSeek(); }
+        });
+        audio.addEventListener('play', () => {
+            playBtn.textContent = '⏸';
+            musicLink.classList.add('playing');
+        });
+        audio.addEventListener('pause', () => {
+            playBtn.textContent = '▶';
+            musicLink.classList.remove('playing');
+        });
+        audio.addEventListener('error', () => {
+            if (tracks[currentIndex]) showTrackName(`无法播放：${tracks[currentIndex].name}`, true);
+        });
+
+        /* ---- 视频背景播放 ---- */
+        pickVideo.addEventListener('click', () => {
+            if (isVideoMode) {
+                // 关闭视频背景，切回音频模式
+                bgVideo.pause();
+                bgVideo.style.display = 'none';
+                isVideoMode = false;
+                renderList();
+                if (tracks.length) playTrack(currentIndex >= 0 ? currentIndex : 0);
+                else showTrackName('未选择音乐', true);
+                pickVideo.textContent = '视频背景';
+                return;
+            }
+            videoInput.click();
+        });
+
+        videoInput.addEventListener('change', e => {
+            const files = Array.from(e.target.files || []);
+            if (!files.length) return;
+
+            audio.pause();
+            videoUrls.forEach(u => URL.revokeObjectURL(u));
+            videoUrls = [];
+
+            videoTracks = files.map(f => {
+                const url = URL.createObjectURL(f);
+                videoUrls.push(url);
+                return { name: f.name.replace(/\.[^.]+$/, ''), url };
+            });
+
+            isVideoMode = true;
+            pickVideo.textContent = '关闭背景';
+            playTrack(0);
+            expandPlayer();
+            videoInput.value = '';
+        });
+
+        bgVideo.addEventListener('timeupdate', updateSeek);
+        bgVideo.addEventListener('loadedmetadata', updateSeek);
+        bgVideo.addEventListener('ended', () => {
+            if (videoTracks.length > 1) playTrack(currentIndex + 1);
+            else { bgVideo.currentTime = 0; updateSeek(); }
+        });
+        bgVideo.addEventListener('play', () => {
+            playBtn.textContent = '⏸';
+            musicLink.classList.add('playing');
+        });
+        bgVideo.addEventListener('pause', () => {
+            playBtn.textContent = '▶';
+            musicLink.classList.remove('playing');
+        });
+        bgVideo.addEventListener('error', () => {
+            if (videoTracks[currentIndex]) showTrackName(`无法播放：${videoTracks[currentIndex].name}`, true);
+        });
+
+        fillRange(volume, audio.volume * 100);
+
+        /* 页脚「音乐」标题：点击展开 / 收起播放器 */
+        musicLink.addEventListener('click', e => {
+            e.preventDefault();
+            if (playerEl.classList.contains('collapsed')) {
+                musicLink.setAttribute('aria-expanded', 'true');
+                expandPlayer();
+            } else {
+                collapsePlayer();
+            }
+        });
+
+        /* ===== 底部时间 / 农历栏 ===== */
+        const scHM = document.getElementById('scHM');
+        const scSec = document.getElementById('scSec');
+        const scDate = document.getElementById('scDate');
+        const scLunar = document.getElementById('scLunar');
+
+        const LUNAR_DAYS = [
+            '初一', '初二', '初三', '初四', '初五', '初六', '初七', '初八', '初九', '初十',
+            '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八', '十九', '二十',
+            '廿一', '廿二', '廿三', '廿四', '廿五', '廿六', '廿七', '廿八', '廿九', '三十'
+        ];
+
+        let lunarFmt = null;
+        try {
+            lunarFmt = new Intl.DateTimeFormat('zh-CN-u-ca-chinese', { month: 'long', day: 'numeric' });
+        } catch (err) {
+            lunarFmt = null;   // 浏览器不支持农历日历时降级隐藏
+        }
+
+        function lunarText(date) {
+            if (!lunarFmt) return '';
+            const parts = lunarFmt.formatToParts(date);
+            const month = parts.find(p => p.type === 'month');
+            const day = parts.find(p => p.type === 'day');
+            if (!month || !day) return '';
+            const dayNum = Number(day.value);
+            return `农历${month.value}${LUNAR_DAYS[dayNum - 1] || day.value}`;
+        }
+
+        function renderClock() {
+            const now = new Date();
+            const pad = n => String(n).padStart(2, '0');
+            scHM.textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+            scSec.textContent = pad(now.getSeconds());
+            scDate.textContent = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 星期${'日一二三四五六'[now.getDay()]}`;
+
+            const lunar = lunarText(now);
+            scLunar.textContent = lunar;
+            scLunar.parentElement.style.display = lunar ? '' : 'none';
+        }
+
+        renderClock();
+        setInterval(renderClock, 1000);
+    </script>
+</body>
+</html>
